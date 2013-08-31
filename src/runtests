@@ -1,0 +1,39 @@
+ #!/bin/bash
+
+while true
+
+# check args
+do
+if [ -z $1 ] 
+then echo "Specify as an argument to runtests a test number from 0-4
+ex: ./runtests 1";
+break;
+elif [ $1 -gt 4 ]
+then echo "Specify as an argument to runtests a test number from 0-4
+ex: ./runtests 1";
+break;
+elif [ $1 -lt 0 ]
+then echo "Specify as an argument to runtests a test number from 0-4
+ex: ./runtests 1";
+break;
+fi;
+
+echo Running test $1
+
+# clean state
+rm *.log
+
+# launch replicas
+./paxos_replica -hostport 8080 -peerport1 8081 -peerport2 8082 &
+./paxos_replica -hostport 8081 -peerport1 8082 -peerport2 8080 &
+./paxos_replica -hostport 8082 -peerport1 8081 -peerport2 8080 &
+
+sleep 3
+
+# launch client
+./paxos_client -cluster_port1 8080 -cluster_port2 8081 -cluster_port3 8082 -test $1
+
+# kill replicas
+pkill -SIGTERM paxos_replica > /dev/null
+break;
+done

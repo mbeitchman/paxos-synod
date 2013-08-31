@@ -1,0 +1,5 @@
+tar xvf xmlrpc-c-1.16.40.tgz
+cd xmlrpc-c-1.16.40
+./configure
+make
+cd ..
